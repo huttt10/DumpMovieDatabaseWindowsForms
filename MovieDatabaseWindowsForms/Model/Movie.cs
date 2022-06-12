@@ -15,23 +15,21 @@ namespace MovieDatabaseWindowsForms.Model
         public string Name { get; set; }
         [Required]
         public string Director { get; set; }
-
+        [Required]
         public int Year { get; set; }
-
+        [Required]
         public int Score { get; set; }
-
+        [Required]
         public int BestRanking { get; set; }
-
+        [Required]
         public int PopularRanking { get; set; }
-
+        [Required]
         public bool Seen { get; set; }
     
 
         public override string ToString()
-        {
-            string ret = string.Empty;
-            ret = this.Name + ", " +  this.Director + ", " + this.Year + ", " + this.Score + ", " + this.BestRanking + ", " + this.PopularRanking + ", " + this.Seen;
-
+        {            
+            string ret = this.Name + "," +  this.Director + "," + this.Year + "," + this.Score + "," + this.BestRanking + "," + this.PopularRanking + "," + this.Seen;                
             return ret;
         }
     }

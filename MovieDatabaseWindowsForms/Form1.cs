@@ -11,6 +11,7 @@ namespace MovieDatabaseWindowsForms
         }
 
         ApplicationDbContext dbContext = new ApplicationDbContext();
+        FaktoryOnMovie factoryOnMovie = new FaktoryOnMovie();
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -18,20 +19,12 @@ namespace MovieDatabaseWindowsForms
         }
 
         private void buttonAdd_Click(object sender, EventArgs e)
-        {            
-            if(textBox.Text != "")
+        {
+            if (textBox.Text != "")
             {
                 string[] strlist = GetFormatString(textBox.Text);
 
-                Movie movie = new Movie {
-                    Name = strlist[0],
-                    Director = strlist[1],
-                    Year = int.Parse(strlist[2]),
-                    Score = int.Parse(strlist[3]),
-                    BestRanking = int.Parse(strlist[4]),
-                    PopularRanking = int.Parse(strlist[5]),
-                    Seen = bool.Parse(strlist[6])                    
-                };
+                Movie movie = factoryOnMovie.CreateMovie(strlist);
 
                 dbContext.Add(movie);
                 dbContext.SaveChanges();
@@ -44,7 +37,7 @@ namespace MovieDatabaseWindowsForms
         {
             string[] retString = ToFormat.Split(',');
 
-            if (retString.Last() == "Ano")
+            if (retString.Last() == "Ano" || retString.Last() == "True")
             {
                 retString[retString.Length - 1] = "True";
             }
@@ -58,15 +51,20 @@ namespace MovieDatabaseWindowsForms
 
         public void PopulateDataGridView()
         {
-            dataGridView.DataSource = dbContext.Movies.ToList<Movie>();
+            dataGridView.DataSource = dbContext.Movies.OrderBy(x => x.BestRanking).ToList<Movie>();
         }
 
         private void buttonEdit_Click(object sender, EventArgs e)
         {
             if (dbContext.Movies.Count<Movie>() != 0)
             {
-                Movie movie = dbContext.Movies.FirstOrDefault(movie => movie.Id == Convert.ToInt32(dataGridView.CurrentRow.Cells["Id"].Value));
-                dbContext.Update(movie);
+                Movie oldMovie = dbContext.Movies.FirstOrDefault(movie => movie.Id == Convert.ToInt32(dataGridView.CurrentRow.Cells["Id"].Value));
+
+                string[] strlist = GetFormatString(textBox.Text);                
+                Movie newMovie = factoryOnMovie.CreateMovie(strlist);
+
+                dbContext.Remove(oldMovie);
+                dbContext.Movies.Add(newMovie);
                 dbContext.SaveChanges();
 
                 Clear();
@@ -76,9 +74,9 @@ namespace MovieDatabaseWindowsForms
 
         private void buttonDelete_Click(object sender, EventArgs e)
         {
-            if(dbContext.Movies.Count<Movie>() != 0)
+            if (dbContext.Movies.Count<Movie>() != 0)
             {
-                Movie movie = dbContext.Movies.FirstOrDefault(movie => movie.Id == Convert.ToInt32(dataGridView.CurrentRow.Cells["Id"].Value));            
+                Movie movie = dbContext.Movies.FirstOrDefault(movie => movie.Id == Convert.ToInt32(dataGridView.CurrentRow.Cells["Id"].Value));
                 dbContext.Movies.Remove(movie);
                 dbContext.SaveChanges();
 
@@ -87,15 +85,35 @@ namespace MovieDatabaseWindowsForms
             }
         }
 
-        private void dataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {                      
-            var neco = dbContext.Movies.FirstOrDefault(movie => movie.Id == e.RowIndex);
-            textBox.Text = Convert.ToString(neco);
-        }
-
         private void Clear()
         {
             textBox.Text = "";
+        }
+
+        private void dataGridView_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            Clear();
+            var id = dataGridView.Rows[e.RowIndex].Cells[0].Value;
+            var movie = dbContext.Movies.FirstOrDefault(m => m.Id == int.Parse(id.ToString()));
+            textBox.Text = Convert.ToString(movie);
+        }
+    }
+
+    class FaktoryOnMovie
+    {
+        public Movie CreateMovie(string[] strlist)
+        {
+            Movie movie = new Movie() {
+                
+                Name = strlist[0],
+                Director = strlist[1],
+                Year = int.Parse(strlist[2]),
+                Score = int.Parse(strlist[3]),
+                BestRanking = int.Parse(strlist[4]),
+                PopularRanking = int.Parse(strlist[5]),
+                Seen = bool.Parse(strlist[6])
+            };
+            return movie;
         }
     }
 }
