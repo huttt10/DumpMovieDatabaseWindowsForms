@@ -30,7 +30,7 @@ namespace MovieDatabaseWindowsForms
                     Score = int.Parse(strlist[3]),
                     BestRanking = int.Parse(strlist[4]),
                     PopularRanking = int.Parse(strlist[5]),
-                    Seen = bool.Parse(strlist[6])
+                    Seen = bool.Parse(strlist[6])                    
                 };
 
                 dbContext.Add(movie);
