@@ -47,12 +47,7 @@ namespace MovieDatabaseWindowsForms
             }
 
             return retString;
-        }
-
-        public void PopulateDataGridView()
-        {
-            dataGridView.DataSource = dbContext.Movies.OrderBy(x => x.BestRanking).ToList<Movie>();
-        }
+        }        
 
         private void buttonEdit_Click(object sender, EventArgs e)
         {
@@ -85,17 +80,22 @@ namespace MovieDatabaseWindowsForms
             }
         }
 
-        private void Clear()
-        {
-            textBox.Text = "";
-        }
-
         private void dataGridView_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             Clear();
             var id = dataGridView.Rows[e.RowIndex].Cells[0].Value;
             var movie = dbContext.Movies.FirstOrDefault(m => m.Id == int.Parse(id.ToString()));
             textBox.Text = Convert.ToString(movie);
+        }
+
+        private void Clear()
+        {
+            textBox.Text = "";
+        }
+
+        private void PopulateDataGridView()
+        {
+            dataGridView.DataSource = dbContext.Movies.OrderBy(x => x.BestRanking).ToList<Movie>();
         }
     }
 
