@@ -21,4 +21,8 @@
     <Folder Include="Properties\DataSources\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MovieDatabaseWindowsFormsTests\MovieDatabaseWindowsFormsTests.csproj" />
+  </ItemGroup>
+
 </Project>
